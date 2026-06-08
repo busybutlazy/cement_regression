@@ -3,8 +3,8 @@ services:
     build: ./backend
     container_name: tank-flow-backend
     restart: unless-stopped
-    expose:
-      - "8000"
+    networks:
+      - internal
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 15s
@@ -15,8 +15,14 @@ services:
     build: ./frontend
     container_name: tank-flow-frontend
     restart: unless-stopped
+    networks:
+      - internal
     ports:
       - "9870:80"
     depends_on:
       backend:
         condition: service_healthy
+
+networks:
+  internal:
+    driver: bridge
