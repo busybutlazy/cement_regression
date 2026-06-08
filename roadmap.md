@@ -268,7 +268,7 @@ tank-flow-estimator/
 
 | Phase | 狀態 | 備註 |
 |---|---|---|
-| P1 Backend 核心運算 | 🔲 未開始 | |
-| P2 Frontend 基本頁面 | 🔲 未開始 | |
-| P3 圖表與統計分析 | 🔲 未開始 | |
-| P4 Docker 整合與測試 | 🔲 未開始 | |
+| P1 Backend 核心運算 | ✅ 完成 | 18/18 測試通過 |
+| P2 Frontend 基本頁面 | ✅ 完成 | TypeScript build clean |
+| P3 圖表與統計分析 | ✅ 完成 | ECharts 7 圖表 |
+| P4 Docker 整合與測試 | ✅ 完成 | docker-compose.yml 就緒 |
