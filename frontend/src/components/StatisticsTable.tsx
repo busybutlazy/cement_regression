@@ -85,7 +85,7 @@ const styles: Record<string, React.CSSProperties> = {
   th: {
     background: "#f1f5f9",
     padding: "10px 12px",
-    textAlign: "right",
+    textAlign: "center" as const,
     fontSize: 12,
     fontWeight: 600,
     color: "#374151",
@@ -98,12 +98,13 @@ const styles: Record<string, React.CSSProperties> = {
     borderBottom: "1px solid #f3f4f6",
     fontWeight: 600,
     color: "#1d4ed8",
+    textAlign: "center" as const,
     whiteSpace: "nowrap" as const,
   },
   td: {
     padding: "9px 12px",
     borderBottom: "1px solid #f3f4f6",
-    textAlign: "right",
+    textAlign: "center" as const,
     color: "#1a1a1a",
   },
 };
