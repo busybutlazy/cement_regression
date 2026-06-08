@@ -76,7 +76,7 @@ function createWindow() {
     height: 860,
     minWidth: 900,
     minHeight: 600,
-    title: '砂量統計分析',
+    title: 'CementRegression',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

@@ -11,7 +11,7 @@
   },
   "build": {
     "appId": "com.yourcompany.cement-regression",
-    "productName": "砂量統計分析",
+    "productName": "CementRegression",
     "directories": {
       "output": "../dist-electron"
     },
@@ -38,8 +38,8 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerLanguages": ["zh_TW", "en_US"],
-      "language": "zh_TW"
+      "installerLanguages": ["TradChinese", "English"],
+      "language": "TradChinese"
     }
   },
   "devDependencies": {
