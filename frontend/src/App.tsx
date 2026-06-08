@@ -4,6 +4,8 @@ import { FileUpload } from "./components/FileUpload";
 import { SummaryCards } from "./components/SummaryCards";
 import { CoefficientTable } from "./components/CoefficientTable";
 import { ErrorTable } from "./components/ErrorTable";
+import { StatisticsTable } from "./components/StatisticsTable";
+import { Charts } from "./components/Charts";
 import type { AnalysisResponse } from "./types/analysis";
 
 export default function App() {
@@ -48,6 +50,8 @@ export default function App() {
               olsRows={result.models.least_squares.rows}
               ladRows={result.models.least_absolute_deviation.rows}
             />
+            <StatisticsTable statistics={result.statistics} />
+            <Charts data={result} />
           </div>
         )}
       </main>
