@@ -92,9 +92,9 @@ backend/
     ├── main.py              # FastAPI 入口，/health, /api/analyze
     ├── api/analyze.py       # endpoint
     ├── services/
-    │   ├── file_parser.py   # csv/xlsx 讀取、欄位檢查
+    │   ├── file_parser.py   # csv/xlsx 讀取、中文→內部欄位 mapping、必要欄位檢查
     │   ├── data_cleaner.py  # 數值轉換、排除列、品質摘要
-    │   ├── feature_builder.py  # target_supply_kg 計算
+    │   ├── feature_builder.py  # 開幅 ÷100、tank_change_kg 換算、target_supply_kg 計算
     │   ├── solvers.py       # least_squares + least_absolute_deviation
     │   └── statistics.py   # count/mean/std/q25/median/q75/max + histogram bins
     ├── schemas/analysis.py  # Pydantic 回傳模型
@@ -140,7 +140,7 @@ frontend/
     ├── api/client.ts          # POST /api/analyze
     ├── types/analysis.ts      # 對應 backend JSON 結構的 TypeScript types
     └── components/
-        ├── FileUpload.tsx     # 拖拉 + 選擇，副檔名限制
+        ├── FileUpload.tsx     # 拖拉 + 選擇，副檔名限制，kg_per_percent 輸入欄位（預設 1120）
         ├── SummaryCards.tsx   # 筆數摘要 + 兩法誤差比較
         ├── CoefficientTable.tsx  # B/C/D/R 兩法對比，差異警示
         └── ErrorTable.tsx     # 每筆 residual/absolute_error，可排序
@@ -256,6 +256,11 @@ tank-flow-estimator/
 | ADR-003 | Frontend Docker 靜態伺服器 | 選 **nginx**。理由：生產環境標準做法，可同時 proxy `/api` 到 backend。放棄 `vite preview`（非 production grade）。 |
 | ADR-004 | 無資料庫 / 無狀態 | 第一版**不建資料庫**，每次請求獨立運算。理由：降低複雜度，符合 target.md 明確 non-goal。放棄 SQLite 暫存（需處理清理邏輯）。 |
 | ADR-005 | 後端 Python 套件管理 | 選 **`pyproject.toml` + pip**（無 Poetry / uv）。理由：Dockerfile 內簡單 `pip install`，降低 CI 依賴。放棄 Poetry（Docker 層較難快取）。 |
+| ADR-006 | xlsx 欄位接受策略 | **直接接受中文欄位名稱**，後端做 mapping，不要求對方改欄位名。理由：真實表單已很乾淨，要求改名增加對方負擔。放棄要求英文欄位名（摩擦成本高）。 |
+| ADR-007 | 開幅單位 | 真實資料為 **% 整數（0–100+）**，後端讀取後 ÷100 轉小數再進模型。允許 > 100%（同槽雙門同開）。放棄要求對方預先換算（增加人為錯誤風險）。 |
+| ADR-008 | `kg_per_percent` 來源 | 不放在 xlsx 裡，改為**前端上傳表單的輸入參數**（預設 1120 kg/%）。理由：是設定值非量測值，每次上傳可彈性調整。放棄放在 xlsx（增加對方維護欄位負擔）。 |
+| ADR-009 | `usage_kg = 0` 的處理 | **保留不排除**。理由：0 用量是合法資料（該小時無使用但進料口可能仍補料到槽），排除會使模型對低用量情境失準。放棄自動排除（會丟失合法訊號）。 |
+| ADR-010 | 每筆資料時間區間 | 固定 **1 小時**，不加 `duration_minutes` 欄位。理由：對方確認所有資料均為 1 小時監測量，係數單位為「kg / (開幅 1.0 × 小時)」。放棄彈性欄位（過度設計）。 |
 
 ---
 
