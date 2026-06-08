@@ -44,6 +44,7 @@ class ModelCoefficients(BaseModel):
 class ModelMetrics(BaseModel):
     mae: float
     rmse: float
+    r_squared: float
     total_absolute_error: float
     total_squared_error: float
 
@@ -63,6 +64,7 @@ class Summary(BaseModel):
     total_rows: int
     valid_rows: int
     invalid_rows: int
+    degrees_of_freedom: int  # valid_rows - n_coefficients (4)
 
 
 class DataQuality(BaseModel):

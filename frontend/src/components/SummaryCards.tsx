@@ -21,6 +21,13 @@ export function SummaryCards({ data }: Props) {
           unit="筆"
           color={summary.invalid_rows > 0 ? "#dc2626" : "#6b7280"}
         />
+        <StatCard
+          label="自由度（有效筆數 − 4）"
+          value={summary.degrees_of_freedom}
+          unit=""
+          color={summary.degrees_of_freedom < 10 ? "#d97706" : "#16a34a"}
+          hint={summary.degrees_of_freedom < 10 ? "自由度偏低，係數估算可靠性有限" : undefined}
+        />
       </div>
 
       <h3 style={styles.subTitle}>兩種方法誤差比較</h3>
@@ -45,7 +52,30 @@ export function SummaryCards({ data }: Props) {
           value={lad.metrics.rmse.toLocaleString()}
           unit="kg"
         />
+        <MetricCard
+          label="OLS R²"
+          value={ols.metrics.r_squared.toFixed(3)}
+          unit=""
+          rSquared={ols.metrics.r_squared}
+        />
+        <MetricCard
+          label="LAD R²"
+          value={lad.metrics.r_squared.toFixed(3)}
+          unit=""
+          rSquared={lad.metrics.r_squared}
+        />
       </div>
+      {(ols.metrics.r_squared < 0.5 || lad.metrics.r_squared < 0.5) && (
+        <div style={styles.warning}>
+          <strong>模型解釋力偏低（R² &lt; 0.5）：</strong>
+          目前係數無法充分解釋桶槽補充量的變化，可能原因：
+          <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
+            <li>資料筆數不足（建議至少 30–50 筆）</li>
+            <li>部分進料口從未單獨使用，無法分離其貢獻</li>
+            <li>桶槽液位受其他因素影響（如人工補料、洩漏）</li>
+          </ul>
+        </div>
+      )}
 
       {data.data_quality.excluded_rows.length > 0 && (
         <div style={styles.warning}>
@@ -68,11 +98,13 @@ function StatCard({
   value,
   unit,
   color = "#1a1a1a",
+  hint,
 }: {
   label: string;
   value: number;
   unit: string;
   color?: string;
+  hint?: string;
 }) {
   return (
     <div style={styles.card}>
@@ -81,6 +113,7 @@ function StatCard({
         {value.toLocaleString()}
         <span style={styles.unit}> {unit}</span>
       </div>
+      {hint && <div style={styles.cardHint}>{hint}</div>}
     </div>
   );
 }
@@ -89,15 +122,26 @@ function MetricCard({
   label,
   value,
   unit,
+  rSquared,
 }: {
   label: string;
   value: string;
   unit: string;
+  rSquared?: number;
 }) {
+  const r2Color =
+    rSquared === undefined
+      ? "#1a1a1a"
+      : rSquared >= 0.7
+      ? "#16a34a"
+      : rSquared >= 0.5
+      ? "#d97706"
+      : "#dc2626";
+
   return (
     <div style={styles.card}>
       <div style={styles.cardLabel}>{label}</div>
-      <div style={styles.cardValue}>
+      <div style={{ ...styles.cardValue, color: rSquared !== undefined ? r2Color : "#1a1a1a" }}>
         {value}
         <span style={styles.unit}> {unit}</span>
       </div>
@@ -118,6 +162,7 @@ const styles: Record<string, React.CSSProperties> = {
   cardLabel: { fontSize: 12, color: "#6b7280", marginBottom: 8 },
   cardValue: { fontSize: 24, fontWeight: 700, color: "#1a1a1a" },
   unit: { fontSize: 13, fontWeight: 400, color: "#6b7280" },
+  cardHint: { fontSize: 11, color: "#d97706", marginTop: 6 },
   warning: {
     marginTop: 16,
     background: "#fef3c7",

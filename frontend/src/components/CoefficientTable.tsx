@@ -39,15 +39,25 @@ export function CoefficientTable({ ols, lad }: Props) {
               const l = lad[port];
               const diff = relDiff(o, l);
               const warn = diff > WARN_THRESHOLD;
+              const bothZero = o === 0 && l === 0;
               return (
-                <tr key={port} style={warn ? styles.warnRow : {}}>
-                  <td style={styles.tdPort}>{port}</td>
-                  <td style={styles.td}>{o.toLocaleString(undefined, { maximumFractionDigits: 1 })}</td>
-                  <td style={styles.td}>{l.toLocaleString(undefined, { maximumFractionDigits: 1 })}</td>
-                  <td style={{ ...styles.td, color: warn ? "#dc2626" : "#6b7280" }}>
-                    {warn ? `⚠ ${(diff * 100).toFixed(0)}%` : `${(diff * 100).toFixed(0)}%`}
-                  </td>
-                </tr>
+                <>
+                  <tr key={port} style={bothZero ? styles.zeroRow : warn ? styles.warnRow : {}}>
+                    <td style={styles.tdPort}>{port}</td>
+                    <td style={styles.td}>{o.toLocaleString(undefined, { maximumFractionDigits: 1 })}</td>
+                    <td style={styles.td}>{l.toLocaleString(undefined, { maximumFractionDigits: 1 })}</td>
+                    <td style={{ ...styles.td, color: bothZero ? "#9ca3af" : warn ? "#dc2626" : "#6b7280" }}>
+                      {bothZero ? "—" : warn ? `⚠ ${(diff * 100).toFixed(0)}%` : `${(diff * 100).toFixed(0)}%`}
+                    </td>
+                  </tr>
+                  {bothZero && (
+                    <tr key={`${port}-hint`}>
+                      <td colSpan={4} style={styles.zeroHint}>
+                        ⚠ {port} 進料口係數為 0：該進料口在資料中從未單獨使用，模型無法分離其獨立貢獻，係數無法可靠估算。
+                      </td>
+                    </tr>
+                  )}
+                </>
               );
             })}
           </tbody>
@@ -100,6 +110,15 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#1d4ed8",
   },
   warnRow: { background: "#fef9f0" },
+  zeroRow: { background: "#f8f9fa", opacity: 0.7 },
+  zeroHint: {
+    padding: "6px 16px 10px",
+    fontSize: 12,
+    color: "#6b7280",
+    background: "#f8f9fa",
+    borderBottom: "1px solid #f3f4f6",
+    fontStyle: "italic" as const,
+  },
   warning: {
     marginTop: 12,
     background: "#fff7ed",

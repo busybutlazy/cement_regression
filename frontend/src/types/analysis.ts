@@ -38,6 +38,7 @@ export interface ModelCoefficients {
 export interface ModelMetrics {
   mae: number;
   rmse: number;
+  r_squared: number;
   total_absolute_error: number;
   total_squared_error: number;
 }
@@ -57,6 +58,7 @@ export interface Summary {
   total_rows: number;
   valid_rows: number;
   invalid_rows: number;
+  degrees_of_freedom: number;
 }
 
 export interface DataQuality {

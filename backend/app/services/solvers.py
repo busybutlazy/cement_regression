@@ -23,6 +23,7 @@ class SolverResult:
     absolute_errors: np.ndarray
     mae: float
     rmse: float
+    r_squared: float
     total_absolute_error: float
     total_squared_error: float
 
@@ -71,6 +72,9 @@ def _build_result(coefs: np.ndarray, X: np.ndarray, y: np.ndarray) -> SolverResu
     predicted = X @ coefs
     residuals = predicted - y
     abs_err = np.abs(residuals)
+    ss_res = float((residuals**2).sum())
+    ss_tot = float(((y - y.mean()) ** 2).sum())
+    r_squared = 1.0 - ss_res / ss_tot if ss_tot > 0 else 0.0
     return SolverResult(
         coefs=coefs,
         predicted=predicted,
@@ -78,6 +82,7 @@ def _build_result(coefs: np.ndarray, X: np.ndarray, y: np.ndarray) -> SolverResu
         absolute_errors=abs_err,
         mae=float(abs_err.mean()),
         rmse=float(np.sqrt((residuals**2).mean())),
+        r_squared=round(r_squared, 4),
         total_absolute_error=float(abs_err.sum()),
-        total_squared_error=float((residuals**2).sum()),
+        total_squared_error=float(ss_res),
     )

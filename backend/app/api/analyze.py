@@ -75,11 +75,13 @@ async def analyze(
     ols_rows = _build_rows(record_ids, y, ols)
     lad_rows = _build_rows(record_ids, y, lad)
 
+    n_coefs = X.shape[1]  # 4 (B, C, D, R)
     return AnalysisResponse(
         summary=Summary(
             total_rows=clean.total_rows,
             valid_rows=clean.valid_rows,
             invalid_rows=len(clean.excluded),
+            degrees_of_freedom=clean.valid_rows - n_coefs,
         ),
         data_quality=DataQuality(
             excluded_rows=[ExcludedRow(**e) for e in clean.excluded]
@@ -159,6 +161,7 @@ def _metrics(result: solvers.SolverResult) -> ModelMetrics:
     return ModelMetrics(
         mae=round(result.mae, 2),
         rmse=round(result.rmse, 2),
+        r_squared=result.r_squared,
         total_absolute_error=round(result.total_absolute_error, 2),
         total_squared_error=round(result.total_squared_error, 2),
     )
