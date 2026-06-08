@@ -5,6 +5,7 @@ __pycache__/
 
 # Electron / PyInstaller build outputs
 backend_dist/
+dist/
 dist-electron/
 electron/node_modules/
 frontend/dist/
