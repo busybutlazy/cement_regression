@@ -1,6 +1,8 @@
 import type { AnalysisResponse } from "../types/analysis";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+// In Docker: nginx proxies /api and /health → backend container.
+// In local dev: point to localhost:8000 (or override via .env.local).
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 export async function analyzeFile(
   file: File,
