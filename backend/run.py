@@ -10,6 +10,10 @@ import argparse
 import os
 import sys
 
+# Import app directly so PyInstaller can detect the dependency via static analysis.
+# (Passing "app.main:app" as a string to uvicorn.run() hides the import from PyInstaller.)
+from app.main import app as fastapi_app  # noqa: E402
+
 import uvicorn
 
 
@@ -19,12 +23,8 @@ def main() -> None:
     parser.add_argument("--host", default="127.0.0.1")
     args = parser.parse_args()
 
-    # When running as a PyInstaller bundle, sys.path needs the extracted dir
-    if getattr(sys, "frozen", False):
-        sys.path.insert(0, sys._MEIPASS)  # type: ignore[attr-defined]
-
     uvicorn.run(
-        "app.main:app",
+        fastapi_app,
         host=args.host,
         port=args.port,
         log_level="warning",

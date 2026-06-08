@@ -14,6 +14,15 @@ a = Analysis(
     binaries=[],
     datas=[],
     hiddenimports=[
+        # app package (uvicorn string-import is invisible to static analysis)
+        'app',
+        'app.main',
+        'app.api',
+        'app.api.analyze',
+        'app.schemas',
+        'app.services',
+        'app.services.solvers',
+        'app.utils',
         # uvicorn internals not always auto-detected
         'uvicorn.logging',
         'uvicorn.loops',
