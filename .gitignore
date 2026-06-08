@@ -2,3 +2,10 @@
 __pycache__/
 *.egg-info/
 .venv/
+
+# Electron / PyInstaller build outputs
+backend_dist/
+dist-electron/
+electron/node_modules/
+frontend/dist/
+build/
