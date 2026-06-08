@@ -16,7 +16,7 @@ services:
     container_name: tank-flow-frontend
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "9870:80"
     depends_on:
       backend:
         condition: service_healthy
