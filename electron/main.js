@@ -42,8 +42,14 @@ async function startBackend() {
   const exe = getBackendExe()
   if (!exe) return // dev mode
 
+  const frontendDist = path.join(process.resourcesPath, 'frontend_dist')
+
   backendProcess = spawn(exe, ['--port', String(BACKEND_PORT)], {
-    env: { ...process.env, BACKEND_PORT: String(BACKEND_PORT) },
+    env: {
+      ...process.env,
+      BACKEND_PORT: String(BACKEND_PORT),
+      FRONTEND_DIST: frontendDist,  // tell the backend where to serve static files from
+    },
     stdio: isDev ? 'inherit' : 'ignore',
     detached: false,
   })

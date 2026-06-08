@@ -10,14 +10,19 @@ from app.api.analyze import router as analyze_router
 
 
 def get_static_dir() -> str | None:
-    """Locate the frontend dist folder whether running from source or PyInstaller bundle."""
-    if getattr(sys, "frozen", False):
-        # PyInstaller bundle: files are extracted to sys._MEIPASS
-        base = sys._MEIPASS  # type: ignore[attr-defined]
-    else:
-        # Running from source: dist is two levels up from this file
-        base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    """Locate the frontend dist folder.
 
+    Priority:
+    1. FRONTEND_DIST env var — set by Electron when spawning the backend exe,
+       points to <resources>/frontend_dist inside the installed app.
+    2. Fallback for direct source execution (dev / Docker).
+    """
+    env_path = os.environ.get("FRONTEND_DIST")
+    if env_path and os.path.isdir(env_path):
+        return env_path
+
+    # Running from source: dist is two levels up from this file
+    base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     candidate = os.path.join(base, "frontend_dist")
     return candidate if os.path.isdir(candidate) else None
 
