@@ -9,3 +9,6 @@ dist-electron/
 electron/node_modules/
 frontend/dist/
 build/
+
+#raw data
+砂量統計_NEW .xlsx
