@@ -10,5 +10,8 @@ electron/node_modules/
 frontend/dist/
 build/
 
+# Claude Code memory
+memory/
+
 #raw data
 砂量統計_NEW .xlsx
