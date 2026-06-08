@@ -38,8 +38,7 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerLanguages": ["TradChinese", "English"],
-      "language": "TradChinese"
+      "language": "1028"
     }
   },
   "devDependencies": {

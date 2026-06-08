@@ -26,7 +26,7 @@ jobs:
           pip install pyinstaller
 
       - name: Build backend with PyInstaller
-        run: pyinstaller backend.spec --noconfirm
+        run: pyinstaller backend.spec --noconfirm --distpath backend_dist
 
       # ── Frontend ──────────────────────────────────────────────────────────
       - name: Setup Node.js 22
