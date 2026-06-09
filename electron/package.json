@@ -1,0 +1,48 @@
+{
+  "name": "cement-regression-desktop",
+  "version": "1.0.0",
+  "description": "砂量統計分析 — 桌面應用程式",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.yourcompany.cement-regression",
+    "productName": "CementRegression",
+    "directories": {
+      "output": "../dist-electron"
+    },
+    "files": [
+      "main.js",
+      "preload.js"
+    ],
+    "extraResources": [
+      {
+        "from": "../backend_dist",
+        "to": "backend",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "../frontend/dist",
+        "to": "frontend_dist",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "../frontend/public/favicon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "language": "1028"
+    }
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^26.0.0"
+  }
+}
