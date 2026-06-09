@@ -4,24 +4,28 @@ Usage (dev):
     python backend/run.py [--port 8000]
 
 Usage (PyInstaller):
-    backend.exe [--port 18432]
+    backend.exe [--port 18432] [--static-dir <path>]
 """
 import argparse
 import os
 import sys
-
-# Import app directly so PyInstaller can detect the dependency via static analysis.
-# (Passing "app.main:app" as a string to uvicorn.run() hides the import from PyInstaller.)
-from app.main import app as fastapi_app  # noqa: E402
-
-import uvicorn
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Tank Flow Estimator backend")
     parser.add_argument("--port", type=int, default=int(os.environ.get("BACKEND_PORT", 8000)))
     parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--static-dir", default=None,
+                        help="Absolute path to frontend dist folder (set by Electron)")
     args = parser.parse_args()
+
+    # Set env var BEFORE importing app so get_static_dir() sees it at module load time
+    if args.static_dir:
+        os.environ["FRONTEND_DIST"] = args.static_dir
+
+    # Import after env var is set
+    import uvicorn
+    from app.main import app as fastapi_app  # noqa: E402 (intentional late import)
 
     uvicorn.run(
         fastapi_app,

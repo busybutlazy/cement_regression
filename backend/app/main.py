@@ -53,6 +53,22 @@ def health() -> dict:
     return {"status": "ok"}
 
 
+@app.get("/debug-info", include_in_schema=False)
+def debug_info() -> dict:
+    """Temporary endpoint to diagnose static file path issues."""
+    import glob as _glob
+    static = get_static_dir()
+    exe_dir = os.path.dirname(sys.executable) if getattr(sys, "frozen", False) else "not frozen"
+    return {
+        "frontend_dist_env": os.environ.get("FRONTEND_DIST"),
+        "resolved_static_dir": static,
+        "static_dir_exists": os.path.isdir(static) if static else False,
+        "frozen": getattr(sys, "frozen", False),
+        "exe_dir": exe_dir,
+        "meipass": getattr(sys, "_MEIPASS", None),
+    }
+
+
 # Mount frontend static files if the dist folder exists (desktop / production mode)
 _static_dir = get_static_dir()
 if _static_dir:
