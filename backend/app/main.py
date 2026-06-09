@@ -13,15 +13,24 @@ def get_static_dir() -> str | None:
     """Locate the frontend dist folder.
 
     Priority:
-    1. FRONTEND_DIST env var — set by Electron when spawning the backend exe,
-       points to <resources>/frontend_dist inside the installed app.
-    2. Fallback for direct source execution (dev / Docker).
+    1. FRONTEND_DIST env var — set by Electron when spawning backend.exe.
+    2. Relative to the exe when frozen — backend.exe lives at
+       resources/backend/backend.exe, so frontend_dist is one level up.
+    3. Source-relative fallback for dev / Docker.
     """
+    # 1. Explicit env var
     env_path = os.environ.get("FRONTEND_DIST")
     if env_path and os.path.isdir(env_path):
         return env_path
 
-    # Running from source: dist is two levels up from this file
+    # 2. PyInstaller bundle: look next to the exe
+    if getattr(sys, "frozen", False):
+        exe_dir = os.path.dirname(sys.executable)
+        candidate = os.path.normpath(os.path.join(exe_dir, "..", "frontend_dist"))
+        if os.path.isdir(candidate):
+            return candidate
+
+    # 3. Source fallback
     base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     candidate = os.path.join(base, "frontend_dist")
     return candidate if os.path.isdir(candidate) else None
@@ -47,7 +56,9 @@ def health() -> dict:
 # Mount frontend static files if the dist folder exists (desktop / production mode)
 _static_dir = get_static_dir()
 if _static_dir:
-    app.mount("/assets", StaticFiles(directory=os.path.join(_static_dir, "assets")), name="assets")
+    _assets_dir = os.path.join(_static_dir, "assets")
+    if os.path.isdir(_assets_dir):
+        app.mount("/assets", StaticFiles(directory=_assets_dir), name="assets")
 
     @app.get("/{full_path:path}", include_in_schema=False)
     def spa_fallback(full_path: str) -> FileResponse:
